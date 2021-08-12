@@ -1,0 +1,24 @@
+#!/bin/bash
+cd "$(dirname "$0")"
+
+case "$(uname -s)" in
+   Linux*)  jreName=jre-linux;;
+   Darwin*) jreName=jre-mac;;
+   *)       echo "Sorry, this is only for linux and macos"; exit;;
+esac
+
+if [[ ! -d "bin/$jreName/bin" ]]; then 
+   if [[ -e "bin/$jreName.zip" ]]; then
+      echo "Setting up runtime files. Unzipping bin/$jreName.zip into folder bin/$jreName";
+      cd bin
+      unzip $jreName.zip
+      cd ..
+   else 
+      echo "Someting is wrong with this installation. Can't find a folder named bin/$jreName or a file named bin/$jreName.zip";
+      exit
+   fi
+fi
+while true; do
+   "bin/$jreName/bin/java" -cp "out/production/BACnetSC:lib/slf4j-api-1.7.28.jar:lib/logback-core-1.2.3.jar:lib/logback-classic-1.2.3.jar:lib/jython-standalone-2.7.2.jar" dev.bscs.common.Application "$@"
+   [ $? != 2 ] &&  break
+done
