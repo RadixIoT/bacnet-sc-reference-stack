@@ -258,16 +258,30 @@ public class SCHubConnector implements SCConnectionOwner, EventListener {
     }
 
     public void sendMessage(SCMessage message) {
-        if      (state == State.CONNECTED_PRIMARY)  primaryConnection.sendMessage(message);
-        else if (state == State.CONNECTED_FAILOVER) failoverConnection.sendMessage(message);
-        // else drop, sorry!
+        switch (state) {
+            case CONNECTED_PRIMARY:
+                primaryConnection.sendMessage(message);
+                break;
+            case CONNECTED_FAILOVER:
+            case REWAIT_PRIMARY:
+                failoverConnection.sendMessage(message);
+                break;
+            default:
+                // drop the message
+                break;
+        }
     }
 
     public int getStateAsInt() {
-        return  state == State.CONNECTED_PRIMARY?
-                SCPayloadAdvertisement.CONN_STAT_PRIMARY :
-                state == State.CONNECTED_FAILOVER? SCPayloadAdvertisement.CONN_STAT_FAILOVER :
-                        SCPayloadAdvertisement.CONN_STAT_NONE;
+        switch (state) {
+            case CONNECTED_PRIMARY:
+                return SCPayloadAdvertisement.CONN_STAT_PRIMARY;
+            case CONNECTED_FAILOVER:
+            case REWAIT_PRIMARY:
+                return SCPayloadAdvertisement.CONN_STAT_FAILOVER;
+            default:
+                return SCPayloadAdvertisement.CONN_STAT_NONE;
+        }
     }
 
     //////////////// Owner Interface ////////////////////////
@@ -304,7 +318,9 @@ public class SCHubConnector implements SCConnectionOwner, EventListener {
     public SCConnection getActiveConnection() { // for manual commands (only?)
         switch (state) {
             case CONNECTED_PRIMARY:  return primaryConnection;
-            case CONNECTED_FAILOVER: return failoverConnection;
+            case CONNECTED_FAILOVER:
+            case REWAIT_PRIMARY:
+                return failoverConnection;
             default: return null;
         }
     }

@@ -258,8 +258,6 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
 			ws.close( CloseFrame.GOING_AWAY );
 		}
 
-		wsf.close();
-
 		synchronized ( this ) {
 			if( selectorthread != null  && selector != null) {
 				selector.wakeup();
@@ -540,6 +538,16 @@ public abstract class WebSocketServer extends AbstractWebSocket implements Runna
 	 */
 	private void doServerShutdown() {
 		stopConnectionLostTimer();
+
+		wsf.close();
+		for( WebSocket ws : getConnections() ) {
+			try {
+				ws.closeConnection( CloseFrame.ABNORMAL_CLOSE, "server shutdown" );
+			} catch ( RuntimeException e ) {
+				log.error( "Exception during connection shutdown", e );
+			}
+		}
+
 		if( decoders != null ) {
 			for( WebSocketWorker w : decoders ) {
 				w.interrupt();
