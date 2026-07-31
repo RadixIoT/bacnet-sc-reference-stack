@@ -68,6 +68,7 @@ public class JWS_BSWebSocketServer extends BSWebSocketServer {
                     )
             );
             super.setConnectionLostTimeout(0);
+            super.setReuseAddr(true);
             // these come from superclass
             if (sslContext != null) super.setWebSocketFactory(new CustomSSLWebSocketServerFactory(sslContext,enabledProtocols,enabledCipherSuites,clientValidation));
         }
