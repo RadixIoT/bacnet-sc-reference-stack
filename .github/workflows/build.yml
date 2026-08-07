@@ -7,6 +7,7 @@ on:
     types: [ opened, synchronize, reopened ]
 permissions:
   contents: read
+  packages: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -26,5 +27,16 @@ jobs:
           java-version: 17
           distribution: 'zulu'
           cache: 'maven'
+          # Writes a settings.xml with a `github` server matching distributionManagement in the pom.
+          server-id: github
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
       - name: Build
         run: mvn -B -T1C package
+      # Pull requests only build; publishing happens on main.
+      - name: Deploy
+        if: github.event_name == 'push'
+        run: mvn -B -DskipTests deploy
+        env:
+          MAVEN_USERNAME: ${{ github.actor }}
+          MAVEN_PASSWORD: ${{ secrets.GITHUB_TOKEN }}

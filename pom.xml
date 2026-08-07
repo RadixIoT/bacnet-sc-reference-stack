@@ -23,7 +23,6 @@
         <!-- Upstream BSCref version this fork is based on, plus a fork-level patch number. -->
         <revision>3.1.0-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <additionalDeploymentRepositoryId>additional-deployment-repository</additionalDeploymentRepositoryId>
         <maven.compiler.release>17</maven.compiler.release>
         <skipTests>false</skipTests>
     </properties>
@@ -138,66 +137,13 @@
         <tag>HEAD</tag>
     </scm>
     <distributionManagement>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/RadixIoT/bacnet-sc-reference-stack</url>
+        </repository>
         <snapshotRepository>
-            <id>ias-snapshots</id>
-            <url>https://maven.mangoautomation.net/repository/ias-snapshot/</url>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/RadixIoT/bacnet-sc-reference-stack</url>
         </snapshotRepository>
-        <repository>
-            <id>ias-releases</id>
-            <url>https://maven.mangoautomation.net/repository/ias-release/</url>
-        </repository>
     </distributionManagement>
-    <repositories>
-        <repository>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <id>ias-snapshots</id>
-            <url>https://maven.mangoautomation.net/repository/ias-snapshot/</url>
-        </repository>
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>ias-releases</id>
-            <url>https://maven.mangoautomation.net/repository/ias-release/</url>
-        </repository>
-    </repositories>
-    <profiles>
-        <profile>
-            <id>additional-deployment-repository</id>
-            <activation>
-                <property>
-                    <name>additionalDeploymentRepositoryUrl</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>additional-deployment-repository</id>
-                                <goals>
-                                    <goal>deploy</goal>
-                                </goals>
-                                <configuration>
-                                    <altDeploymentRepository>
-                                        ${additionalDeploymentRepositoryId}::${additionalDeploymentRepositoryUrl}
-                                    </altDeploymentRepository>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
