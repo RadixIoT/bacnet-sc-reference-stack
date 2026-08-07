@@ -21,7 +21,7 @@
     </organization>
     <properties>
         <!-- Upstream BSCref version this fork is based on, plus a fork-level patch number. -->
-        <revision>3.1.0-SNAPSHOT</revision>
+        <revision>3.1.0.1-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
         <skipTests>false</skipTests>
